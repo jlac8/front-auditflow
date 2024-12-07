@@ -1,4 +1,7 @@
 import viteLogo from "/vite.svg";
+import Button from "@mui/material/Button";
+import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
 
 function Home() {
   return (
@@ -8,6 +11,20 @@ function Home() {
       </a>
       <h1>AuditFlow</h1>
       <p>Herramienta para auditorias</p>
+      <Button
+        href="https://github.com/jlac8/front-auditflow"
+        variant="contained"
+        startIcon={<GitHubIcon />}
+      >
+        Github
+      </Button>
+      <Button
+        href="https://www.linkedin.com/in/juan-luis-alva/"
+        variant="contained"
+        startIcon={<LinkedInIcon />}
+      >
+        Linkedin
+      </Button>
     </main>
   );
 }
