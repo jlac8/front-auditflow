@@ -13,6 +13,7 @@ function Home() {
       <p>Herramienta para auditorias</p>
       <Button
         href="https://github.com/jlac8/front-auditflow"
+        target="_blank"
         variant="contained"
         startIcon={<GitHubIcon />}
       >
@@ -20,6 +21,7 @@ function Home() {
       </Button>
       <Button
         href="https://www.linkedin.com/in/juan-luis-alva/"
+        target="_blank"
         variant="contained"
         startIcon={<LinkedInIcon />}
       >
