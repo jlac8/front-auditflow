@@ -38,7 +38,7 @@ As part of the bootcamp requirements, the project must meet the following criter
 - **TypeScript** – For type safety and enhanced development experience.
 - **Mobile-First Workflow** – Ensures a responsive design from the start.
 - **Material-UI** – For modern and accessible UI components.
-- **Styled-Components** – For scoped and dynamic CSS styling.
+- **Tailwindcss** – For CSS styling.
 - **React Router** – For seamless navigation between views.
 - **JSON-Server** – Mock backend for simulating API responses.
 
@@ -64,7 +64,7 @@ Integration with a production-grade backend for improved scalability and perform
 
 ### Useful resources
 
-- [Styled-Components](https://styled-components.com/) - A robust tool for managing CSS in JavaScript. It streamlined styling in this project and will remain a go-to for future work.
+- [Mui with Tailwind](https://mui.com/material-ui/integrations/interoperability/#tailwind-css) - Use Tailwind CSS together with the Material UI components,
 
 ## Author
 
