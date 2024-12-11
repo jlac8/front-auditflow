@@ -13,7 +13,10 @@ import { styled } from "@mui/material/styles";
 import AppTheme from "../shared-theme/AppTheme";
 import { GoogleIcon } from "./CustomIcons";
 import ColorModeSelect from "../shared-theme/ColorModeSelect";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { toast } from "sonner";
+import { registerAuditor } from "../../services/authService";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -63,6 +66,9 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const [nameError, setNameError] = useState(false);
   const [nameErrorMessage, setNameErrorMessage] = useState("");
 
+  const navigate = useNavigate();
+  const formRef = useRef<HTMLFormElement>(null);
+
   const validateInputs = () => {
     const email = document.getElementById("email") as HTMLInputElement;
     const password = document.getElementById("password") as HTMLInputElement;
@@ -88,7 +94,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       setPasswordErrorMessage("");
     }
 
-    if (!name.value || name.value.length < 1) {
+    if (!name.value || name.value.trim().length < 1) {
       setNameError(true);
       setNameErrorMessage("Name is required.");
       isValid = false;
@@ -100,18 +106,35 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
     return isValid;
   };
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (nameError || emailError || passwordError) {
-      event.preventDefault();
-      return;
+  const handleRegister = async (registrationData: {
+    name: string;
+    email: string;
+    password: string;
+  }) => {
+    try {
+      await registerAuditor(registrationData);
+      toast.success("¡Registro exitoso! 🎉 Por favor, inicia sesión");
+      formRef.current?.reset();
+      navigate("/sign-in");
+    } catch (error: unknown) {
+      toast.error(
+        error.message || "Registro fallido. Por favor, inténtalo de nuevo."
+      );
     }
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!validateInputs()) return;
+
     const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get("name"),
-      lastName: data.get("lastName"),
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const registrationData = {
+      name: data.get("name") as string,
+      email: data.get("email") as string,
+      password: data.get("password") as string,
+    };
+
+    handleRegister(registrationData);
   };
 
   return (
@@ -123,6 +146,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
           <Box
             component="form"
             onSubmit={handleSubmit}
+            ref={formRef}
             sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
             <FormControl>
@@ -170,12 +194,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
                 color={passwordError ? "error" : "primary"}
               />
             </FormControl>
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={validateInputs}
-            >
+            <Button type="submit" fullWidth variant="contained">
               Sign up
             </Button>
           </Box>
@@ -194,7 +213,8 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
             <Typography sx={{ textAlign: "center" }}>
               Already have an account?{" "}
               <Link
-                href="../sign-in/"
+                component={RouterLink}
+                to="/sign-in"
                 variant="body2"
                 sx={{ alignSelf: "center" }}
               >
