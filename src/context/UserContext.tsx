@@ -36,9 +36,15 @@ export default function UserProvider({ children }: { children: ReactNode }) {
   const saveUser = (data: LoginResponse): void => {
     const { token, data: dataToSave } = data;
 
+    // Guardar usuario y token en localStorage
     localStorage.setItem("user", JSON.stringify(dataToSave));
+    localStorage.setItem("token", token); // Agrega esta línea
+
     setUser(dataToSave);
+
+    // También guardas el token en la cookie, si así lo deseas
     document.cookie = `token=${token}; path=/;`;
+
     navigate("/dashboard");
   };
 

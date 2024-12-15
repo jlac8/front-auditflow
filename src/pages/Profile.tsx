@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+import type React from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../context/UserContext";
 import {
   Box,
@@ -12,8 +13,7 @@ import {
 import { styled } from "@mui/material/styles";
 import { toast } from "sonner";
 
-// Suponemos que tienes una función updateUserProfile en tus servicios
-import { updateUserProfile } from "../services/userService"; // Ejemplo
+import { updateUserProfile } from "../services/userService";
 
 const Input = styled("input")({
   display: "none",
@@ -22,7 +22,8 @@ const Input = styled("input")({
 export default function Profile() {
   const { user, saveUser } = useContext(UserContext);
 
-  // Estados locales para el formulario
+  // Añadido el estado para 'name'
+  const [name, setName] = useState(user?.name || "");
   const [teamName, setTeamName] = useState(user?.teamName || "");
   const [role, setRole] = useState(user?.role || "Auditor de TI");
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
@@ -30,7 +31,7 @@ export default function Profile() {
   const handleProfilePictureChange = (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target.files?.[0]) {
       setProfilePicture(e.target.files[0]);
     }
   };
@@ -38,19 +39,32 @@ export default function Profile() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Aquí tendrías la lógica para subir la imagen y actualizar el perfil
     try {
-      // Ejemplo: envía el teamName, role y profilePicture al servidor
       const formData = new FormData();
+      formData.append("name", name);
       formData.append("teamName", teamName);
       formData.append("role", role);
       if (profilePicture) {
         formData.append("profilePicture", profilePicture);
       }
 
-      // Llamar a un servicio para actualizar el perfil del usuario
+      // Actualiza el perfil y recibe el usuario actualizado
       const updatedUser = await updateUserProfile(formData);
-      saveUser({ token: "", data: updatedUser }); // Ajusta según cómo manejas el token y usuario
+
+      // Obtén el token actual de la cookie o localStorage
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        throw new Error("Token no encontrado después de la actualización.");
+      }
+
+      // Guarda el usuario actualizado y el token existente
+      saveUser({
+        token,
+        data: updatedUser,
+        message: "",
+      });
+
       toast.success("¡Perfil actualizado con éxito!");
     } catch (error: any) {
       console.error(error);
@@ -71,10 +85,15 @@ export default function Profile() {
         >
           <Box className="flex flex-col items-center gap-4">
             <Avatar
-              alt={user?.name || "User"}
-              src={user?.profilePicture || ""}
+              alt={name || "Usuario"}
+              src={
+                profilePicture
+                  ? URL.createObjectURL(profilePicture)
+                  : user?.profilePicture || ""
+              }
               sx={{ width: 100, height: 100 }}
             />
+
             <label htmlFor="profile-picture-upload">
               <Input
                 accept="image/*"
@@ -87,6 +106,15 @@ export default function Profile() {
               </Button>
             </label>
           </Box>
+
+          {/* Nuevo campo para 'name' */}
+          <TextField
+            label="Nombre"
+            variant="outlined"
+            fullWidth
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
 
           <TextField
             label="Nombre del equipo"

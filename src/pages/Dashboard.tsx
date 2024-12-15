@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 function Dashboard() {
+  const navigate = useNavigate(); // Corrección 1: Agregar useNavigate
+
   const team = "Inversiones";
 
   const audits = [
@@ -28,11 +32,11 @@ function Dashboard() {
   ];
 
   const handleViewClick = (auditId) => {
-    navigate(`/risk-matrix/${auditId}`); // Redirige a la URL de la auditoría
+    navigate(`/risk-matrix/${auditId}`); // Corrección 2: usar audit.id en lugar de audit.name
   };
 
   const handleAddAudit = () => {
-    navigate("/new-audit"); // Redirige a la URL dinámica para añadir una auditoría
+    navigate("/new-audit");
   };
 
   const handleDeleteClick = (auditId) => {
@@ -40,15 +44,14 @@ function Dashboard() {
   };
 
   return (
-    <>
+    <main className="flex flex-col px-6 py-6">
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
         Equipo: <span className="text-blue-600">{team}</span>
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Tablas de Auditorías y Recorridos */}
         <div className="bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Auditorías del equipo {team} {/* Mostrar el equipo desde la URL */}
+            Auditorías del equipo {team}
           </h2>
           <table className="w-full border-collapse table-auto">
             <thead>
@@ -81,7 +84,7 @@ function Dashboard() {
                   <td className="p-2 border">{audit.period}</td>
                   <td className="p-2 border">
                     <button
-                      onClick={() => handleViewClick(audit.name)}
+                      onClick={() => handleViewClick(audit.id)} // Corrección 3: usar audit.id
                       className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 mr-2"
                     >
                       Ver
@@ -105,7 +108,7 @@ function Dashboard() {
           </button>
         </div>
       </div>
-    </>
+    </main>
   );
 }
 

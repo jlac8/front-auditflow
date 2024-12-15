@@ -5,7 +5,7 @@ export async function updateUserProfile(formData: FormData) {
     // Suponemos que el usuario ya tiene un token en localStorage o context para autenticar la request.
     // Ajusta según tu lógica de autenticación.
     const token = localStorage.getItem("token"); // Ejemplo
-    const res = await fetch(`${API_BASE_URL}/auditors/profile`, {
+    const res = await fetch(`${API_BASE_URL}/profile`, {
       method: "PUT",
       headers: {
         // No se establece "Content-Type" ya que fetch lo hará automáticamente con formData

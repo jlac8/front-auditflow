@@ -55,26 +55,3 @@ export const registerAuditor = async (
     throw error;
   }
 };
-
-export const registerAgency = async (
-  form: AuditorRegForm
-): Promise<RegisterResponse> => {
-  try {
-    const { ...formToSend } = form;
-    const res = await fetch(`${API_AUTH_URL}/register-agency`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formToSend),
-    });
-    if (!res.ok)
-      throw new Error(
-        "Error al registrar agencia 😢 Por favor, inténtalo de nuevo"
-      );
-    return res.json() as Promise<RegisterResponse>;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-};

@@ -13,11 +13,6 @@ export const getBearerToken = () => {
 };
 
 export const getDataFromLocalStorage = (key: string) => {
-  try {
-    const data = localStorage.getItem(key);
-    if (data) return JSON.parse(data);
-    return null;
-  } catch {
-    return localStorage.getItem(key);
-  }
+  // Retornar directamente el valor sin parsear
+  return localStorage.getItem(key);
 };
