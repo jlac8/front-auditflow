@@ -5,11 +5,11 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "skipLibCheck": true, // Ignora tipos en bibliotecas
-    "noEmitOnError": false, // Permite emitir archivos aunque haya errores
+    "skipLibCheck": true,
+    "noEmitOnError": false,
 
     /* Bundler mode */
-    "moduleResolution": "node", // Cambiado a node para evitar problemas con Vite
+    "moduleResolution": "node",
     "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force",
@@ -17,11 +17,15 @@
     "jsx": "react-jsx",
 
     /* Linting (relajado) */
-    "strict": false, // Relaja el modo estricto
+    "strict": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noFallthroughCasesInSwitch": false, // Relaja errores en switch
-    "noUncheckedSideEffectImports": false
+    "noFallthroughCasesInSwitch": false,
+    "noUncheckedSideEffectImports": false,
+
+    /* Estas dos son importantes para las importaciones por defecto de React */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["src"]
 }

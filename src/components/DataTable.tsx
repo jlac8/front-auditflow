@@ -1,5 +1,3 @@
-// src/components/DataTable.tsx
-
 import type React from "react";
 import { useState, useEffect } from "react";
 import {
@@ -37,7 +35,7 @@ const DataTable: React.FC<DataTableProps> = ({ rows, onSelectionChange }) => {
   }, [rows]);
 
   // Función para manejar el cambio en la política
-  const handlePolicyChange = (id: string, newPolicy: string) => {
+  const handlePolicyChange = (id: number, newPolicy: string) => {
     const updatedRows = localRows.map((row) =>
       row.id === id ? { ...row, politica: newPolicy } : row
     );
@@ -45,7 +43,7 @@ const DataTable: React.FC<DataTableProps> = ({ rows, onSelectionChange }) => {
   };
 
   // Función para agregar una nueva palabra clave
-  const handleAddKeyword = (id: string, keyword: string) => {
+  const handleAddKeyword = (id: number, keyword: string) => {
     if (keyword.trim() === "") return;
     const updatedRows = localRows.map((row) =>
       row.id === id
@@ -59,7 +57,7 @@ const DataTable: React.FC<DataTableProps> = ({ rows, onSelectionChange }) => {
   };
 
   // Función para eliminar una palabra clave existente
-  const handleDeleteKeyword = (id: string, keyword: string) => {
+  const handleDeleteKeyword = (id: number, keyword: string) => {
     const updatedRows = localRows.map((row) =>
       row.id === id
         ? {
@@ -139,7 +137,8 @@ const DataTable: React.FC<DataTableProps> = ({ rows, onSelectionChange }) => {
       <DataGrid
         rows={localRows}
         columns={columns}
-        rowsPerPageOptions={[5, 10, 20]}
+        // Cambiar rowsPerPageOptions por pageSizeOptions en versiones recientes de MUI
+        pageSizeOptions={[5, 10, 20]}
         checkboxSelection
         onSelectionModelChange={handleSelectionChange}
         disableSelectionOnClick
