@@ -1,7 +1,10 @@
 import { useState } from "react";
 import * as XLSX from "xlsx";
+import { createAudit } from "../services/auditsService";
+import { useNavigate } from "react-router-dom";
 
 function NewAudit() {
+  const navigate = useNavigate();
   const [leader, setLeader] = useState("");
   const [name, setName] = useState("");
   const [period, setPeriod] = useState("");
@@ -55,8 +58,33 @@ function NewAudit() {
     setRisks(updatedRisks);
   };
 
-  const handleCreateAudit = () => {
-    alert("La funcionalidad para crear auditorías aún no está implementada.");
+  const handleCreateAudit = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("No hay token, inicia sesión primero.");
+        navigate("/sign-in");
+        return;
+      }
+
+      if (!leader || !name || !period) {
+        alert("Todos los campos son obligatorios.");
+        return;
+      }
+
+      // Cambia los nombres de los campos a los esperados
+      const newAudit = await createAudit(token, {
+        leaderName: leader,
+        auditName: name,
+        period,
+      });
+
+      alert("Auditoría creada con éxito");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+      alert("Error al crear la auditoría");
+    }
   };
 
   return (
@@ -65,7 +93,6 @@ function NewAudit() {
         <h1 className="text-2xl font-bold text-gray-800">Crear Auditoría</h1>
       </header>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        {/* Detalles de la Auditoría */}
         <div className="col-span-1 bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Detalles de la Auditoría
@@ -119,7 +146,6 @@ function NewAudit() {
           </div>
         </div>
 
-        {/* Asignación de Equipo de Trabajo */}
         <div className="col-span-3 bg-white p-4 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Asignación de equipo de trabajo

@@ -1,46 +1,56 @@
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { fetchAudits, deleteAudit } from "../services/auditsService";
 
 function Dashboard() {
-  const navigate = useNavigate(); // Corrección 1: Agregar useNavigate
-
+  const navigate = useNavigate();
+  const [audits, setAudits] = useState([]);
   const team = "Inversiones";
 
-  const audits = [
-    { id: 1, leader: "Diego", name: "Divisas", status: "Activa", period: 2024 },
-    { id: 2, leader: "Fiorella", name: "MdD", status: "Activa", period: 2024 },
-    {
-      id: 3,
-      leader: "Emily",
-      name: "Derivados",
-      status: "Cerrada",
-      period: 2024,
-    },
-    {
-      id: 4,
-      leader: "Paola",
-      name: "Inversiones",
-      status: "Cerrada",
-      period: 2024,
-    },
-    {
-      id: 5,
-      leader: "Amado",
-      name: "Divisas",
-      status: "Cerrada",
-      period: 2024,
-    },
-  ];
+  useEffect(() => {
+    // Suponiendo que el token se guarda en localStorage
+    const token = localStorage.getItem("token");
+    if (!token) {
+      navigate("/sign-in");
+      return;
+    }
+
+    (async () => {
+      try {
+        const auditsData = await fetchAudits(token);
+        setAudits(auditsData);
+      } catch (error) {
+        console.error(error);
+      }
+    })();
+  }, [navigate]);
 
   const handleViewClick = (auditId) => {
-    navigate(`/risk-matrix/${auditId}`); // Corrección 2: usar audit.id en lugar de audit.name
+    navigate(`/risk-matrix/${auditId}`);
   };
 
   const handleAddAudit = () => {
     navigate("/new-audit");
   };
 
-  const handleDeleteClick = (auditId) => {
-    alert(`Eliminar auditoría con ID ${auditId} no está implementado.`);
+  const handleDeleteClick = async (auditId) => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Debes iniciar sesión.");
+      navigate("/sign-in");
+      return;
+    }
+
+    if (window.confirm("¿Estás seguro de eliminar esta auditoría?")) {
+      try {
+        await deleteAudit(token, auditId);
+        setAudits((prev) => prev.filter((audit) => audit.id !== auditId));
+        alert("Auditoría eliminada con éxito.");
+      } catch (error) {
+        console.error(error);
+        alert("Error al eliminar la auditoría.");
+      }
+    }
   };
 
   return (
@@ -66,8 +76,8 @@ function Dashboard() {
             <tbody>
               {audits.map((audit) => (
                 <tr key={audit.id} className="text-sm text-gray-700">
-                  <td className="p-2 border">{audit.leader}</td>
-                  <td className="p-2 border">{audit.name}</td>
+                  <td className="p-2 border">{audit.leaderName}</td>
+                  <td className="p-2 border">{audit.auditName}</td>
                   <td className="p-2 border">
                     <span
                       className={`px-2 py-1 rounded-full text-white ${
@@ -84,7 +94,7 @@ function Dashboard() {
                   <td className="p-2 border">{audit.period}</td>
                   <td className="p-2 border">
                     <button
-                      onClick={() => handleViewClick(audit.id)} // Corrección 3: usar audit.id
+                      onClick={() => handleViewClick(audit.id)}
                       className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 mr-2"
                     >
                       Ver
