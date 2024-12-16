@@ -2,7 +2,7 @@ import React from "react";
 import DarkModeIcon from "@mui/icons-material/DarkModeRounded";
 import LightModeIcon from "@mui/icons-material/LightModeRounded";
 import Box from "@mui/material/Box";
-import IconButton, { IconButtonOwnProps } from "@mui/material/IconButton";
+import IconButton, { type IconButtonOwnProps } from "@mui/material/IconButton";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useColorScheme } from "@mui/material/styles";
@@ -30,9 +30,9 @@ export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
           display: "inline-flex",
           width: "2.25rem",
           height: "2.25rem",
-          borderRadius: (theme.vars || theme).shape.borderRadius,
+          borderRadius: theme.shape.borderRadius,
           border: "1px solid",
-          borderColor: (theme.vars || theme).palette.divider,
+          borderColor: theme.palette.divider,
         })}
       />
     );

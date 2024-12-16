@@ -140,8 +140,8 @@ const DataTable: React.FC<DataTableProps> = ({ rows, onSelectionChange }) => {
         // Cambiar rowsPerPageOptions por pageSizeOptions en versiones recientes de MUI
         pageSizeOptions={[5, 10, 20]}
         checkboxSelection
-        onSelectionModelChange={handleSelectionChange}
-        disableSelectionOnClick
+        onRowSelectionModelChange={handleSelectionChange}
+        disableRowSelectionOnClick
         getRowHeight={() => "auto"}
         sx={{
           "& .MuiDataGrid-cell": {

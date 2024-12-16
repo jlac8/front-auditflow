@@ -1,14 +1,24 @@
-import { type SetStateAction, useState } from "react";
+import { useState, type ChangeEvent } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable from "../components/DataTable";
 import Button from "@mui/material/Button";
 
+// Definimos RowType para que coincida con DataTable
+interface RowType {
+  id: number;
+  riesgo: string;
+  control: string;
+  recorrido: string;
+  politica: string;
+  palabrasClave: string[];
+}
+
 function RiskMatrix() {
   const [journeyName, setJourneyName] = useState("");
   const navigate = useNavigate();
-  const { team, audit } = useParams(); // Correcto: Obtener parámetros desde la URL
+  const { team, audit } = useParams(); // Obtener parámetros desde la URL
 
-  const risksData = [
+  const risksData: RowType[] = [
     {
       id: 1,
       riesgo:
@@ -33,19 +43,23 @@ function RiskMatrix() {
     },
   ];
 
-  const [selectedRows, setSelectedRows] = useState([]);
+  const [selectedRows, setSelectedRows] = useState<RowType[]>([]);
   const [pdfFileName, setPdfFileName] = useState("");
 
-  const handleRowSelection = (newSelection: SetStateAction<never[]>) => {
+  // Ahora handleRowSelection recibe un RowType[]
+  const handleRowSelection = (newSelection: RowType[]) => {
     setSelectedRows(newSelection);
   };
 
-  const handleFileUpload = (event: { target: { files: any[] } }) => {
-    const file = event.target.files[0];
-    if (file && file.type === "application/pdf") {
-      setPdfFileName(file.name);
-    } else {
-      alert("Por favor, selecciona un archivo PDF válido.");
+  const handleFileUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const file = files[0];
+      if (file.type === "application/pdf") {
+        setPdfFileName(file.name);
+      } else {
+        alert("Por favor, selecciona un archivo PDF válido.");
+      }
     }
   };
 

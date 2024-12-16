@@ -116,7 +116,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       toast.success("¡Registro exitoso! 🎉 Por favor, inicia sesión");
       formRef.current?.reset();
       navigate("/sign-in");
-    } catch (error: unknown) {
+    } catch (error) {
       toast.error(
         error.message || "Registro fallido. Por favor, inténtalo de nuevo."
       );
