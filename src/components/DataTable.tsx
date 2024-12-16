@@ -1,18 +1,52 @@
-import { DataGrid } from "@mui/x-data-grid";
+// src/components/DataTable.tsx
+
+import React, { useState, useEffect } from "react";
+import {
+  DataGrid,
+  type GridColDef,
+  GridRowSelectionModel,
+} from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import Chip from "@mui/material/Chip";
 
-const DataTable = ({ rows, onSelectionChange }) => {
-  const handlePolicyChange = (id, newPolicy) => {
-    rows = rows.map((row) =>
+// Definición de la interfaz para cada fila de datos
+interface RowType {
+  id: string;
+  riesgo: string;
+  control: string;
+  recorrido: string;
+  politica: string;
+  palabrasClave: string[];
+}
+
+// Definición de las props que recibe el componente DataTable
+interface DataTableProps {
+  rows: RowType[];
+  onSelectionChange: (selectedRows: RowType[]) => void;
+}
+
+const DataTable: React.FC<DataTableProps> = ({ rows, onSelectionChange }) => {
+  // Estado local para gestionar las filas internamente y evitar la mutación directa de las props
+  const [localRows, setLocalRows] = useState<RowType[]>(rows);
+
+  // Efecto para actualizar el estado local cuando las props cambian
+  useEffect(() => {
+    setLocalRows(rows);
+  }, [rows]);
+
+  // Función para manejar el cambio en la política
+  const handlePolicyChange = (id: string, newPolicy: string) => {
+    const updatedRows = localRows.map((row) =>
       row.id === id ? { ...row, politica: newPolicy } : row
     );
+    setLocalRows(updatedRows);
   };
 
-  const handleAddKeyword = (id, keyword) => {
+  // Función para agregar una nueva palabra clave
+  const handleAddKeyword = (id: string, keyword: string) => {
     if (keyword.trim() === "") return;
-    rows = rows.map((row) =>
+    const updatedRows = localRows.map((row) =>
       row.id === id
         ? {
             ...row,
@@ -20,10 +54,12 @@ const DataTable = ({ rows, onSelectionChange }) => {
           }
         : row
     );
+    setLocalRows(updatedRows);
   };
 
-  const handleDeleteKeyword = (id, keyword) => {
-    rows = rows.map((row) =>
+  // Función para eliminar una palabra clave existente
+  const handleDeleteKeyword = (id: string, keyword: string) => {
+    const updatedRows = localRows.map((row) =>
       row.id === id
         ? {
             ...row,
@@ -31,9 +67,11 @@ const DataTable = ({ rows, onSelectionChange }) => {
           }
         : row
     );
+    setLocalRows(updatedRows);
   };
 
-  const columns = [
+  // Definición de las columnas para el DataGrid
+  const columns: GridColDef[] = [
     { field: "riesgo", headerName: "Riesgo", flex: 2 },
     { field: "control", headerName: "Control", flex: 2 },
     { field: "recorrido", headerName: "Recorrido", flex: 2 },
@@ -44,7 +82,9 @@ const DataTable = ({ rows, onSelectionChange }) => {
       renderCell: (params) => (
         <TextField
           value={params.row.politica}
-          onChange={(e) => handlePolicyChange(params.row.id, e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            handlePolicyChange(params.row.id, e.target.value)
+          }
           placeholder="Buscar política"
           size="small"
           fullWidth
@@ -67,12 +107,16 @@ const DataTable = ({ rows, onSelectionChange }) => {
             />
           ))}
           <TextField
-            placeholder="New tag"
+            placeholder="Nueva palabra clave"
             size="small"
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && e.target.value.trim() !== "") {
-                handleAddKeyword(params.row.id, e.target.value);
-                e.target.value = "";
+            onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => {
+              if (e.key === "Enter") {
+                const target = e.target as HTMLInputElement;
+                const value = target.value.trim();
+                if (value !== "") {
+                  handleAddKeyword(params.row.id, value);
+                  target.value = "";
+                }
               }
             }}
           />
@@ -81,19 +125,23 @@ const DataTable = ({ rows, onSelectionChange }) => {
     },
   ];
 
+  // Función para manejar el cambio en la selección de filas
+  const handleSelectionChange = (newSelection: GridSelectionModel) => {
+    const selectedRows = localRows.filter((row) =>
+      newSelection.includes(row.id)
+    );
+    onSelectionChange(selectedRows);
+  };
+
   return (
     <Paper sx={{ height: 500, width: "100%", padding: 2 }}>
       <DataGrid
-        rows={rows}
+        rows={localRows}
         columns={columns}
         pageSize={5}
+        rowsPerPageOptions={[5, 10, 20]}
         checkboxSelection
-        onSelectionModelChange={(newSelection) => {
-          const selectedRows = rows.filter((row) =>
-            newSelection.includes(row.id)
-          );
-          onSelectionChange(selectedRows);
-        }}
+        onSelectionModelChange={handleSelectionChange}
         disableSelectionOnClick
         getRowHeight={() => "auto"}
         sx={{
