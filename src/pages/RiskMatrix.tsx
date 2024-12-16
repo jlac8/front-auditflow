@@ -1,4 +1,4 @@
-import { SetStateAction, useState } from "react";
+import { type SetStateAction, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DataTable from "../components/DataTable";
 import Button from "@mui/material/Button";

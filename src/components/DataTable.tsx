@@ -1,10 +1,11 @@
 // src/components/DataTable.tsx
 
-import React, { useState, useEffect } from "react";
+import type React from "react";
+import { useState, useEffect } from "react";
 import {
   DataGrid,
   type GridColDef,
-  GridRowSelectionModel,
+  type GridRowSelectionModel,
 } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
@@ -12,7 +13,7 @@ import Chip from "@mui/material/Chip";
 
 // Definición de la interfaz para cada fila de datos
 interface RowType {
-  id: string;
+  id: number;
   riesgo: string;
   control: string;
   recorrido: string;
@@ -126,7 +127,7 @@ const DataTable: React.FC<DataTableProps> = ({ rows, onSelectionChange }) => {
   ];
 
   // Función para manejar el cambio en la selección de filas
-  const handleSelectionChange = (newSelection: GridSelectionModel) => {
+  const handleSelectionChange = (newSelection: GridRowSelectionModel) => {
     const selectedRows = localRows.filter((row) =>
       newSelection.includes(row.id)
     );
@@ -138,7 +139,6 @@ const DataTable: React.FC<DataTableProps> = ({ rows, onSelectionChange }) => {
       <DataGrid
         rows={localRows}
         columns={columns}
-        pageSize={5}
         rowsPerPageOptions={[5, 10, 20]}
         checkboxSelection
         onSelectionModelChange={handleSelectionChange}
