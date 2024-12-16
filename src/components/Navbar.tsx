@@ -95,7 +95,7 @@ function NavBar() {
               <Tooltip title="Open settings">
                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                   <Avatar
-                    alt={`${user.firstName} ${user.lastName}`}
+                    alt={`${user.name}`}
                     src={user.profilePicture || "/static/images/avatar/2.jpg"}
                   />
                 </IconButton>

@@ -1,4 +1,4 @@
-import { createContext, useState, useEffect, type ReactNode } from "react";
+import { createContext, useState, type ReactNode } from "react";
 import { toast } from "sonner";
 import type { AuditorDataResponse, LoginResponse } from "../types/auth";
 import { getDataFromLocalStorage } from "../utils";

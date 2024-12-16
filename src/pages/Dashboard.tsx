@@ -2,13 +2,20 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchAudits, deleteAudit } from "../services/auditsService";
 
+interface Audit {
+  id: number;
+  leaderName: string;
+  auditName: string;
+  status: string;
+  period: string;
+}
+
 function Dashboard() {
   const navigate = useNavigate();
-  const [audits, setAudits] = useState([]);
+  const [audits, setAudits] = useState<Audit[]>([]);
   const team = "Inversiones";
 
   useEffect(() => {
-    // Suponiendo que el token se guarda en localStorage
     const token = localStorage.getItem("token");
     if (!token) {
       navigate("/sign-in");
@@ -17,7 +24,7 @@ function Dashboard() {
 
     (async () => {
       try {
-        const auditsData = await fetchAudits(token);
+        const auditsData: Audit[] = await fetchAudits(token);
         setAudits(auditsData);
       } catch (error) {
         console.error(error);
@@ -25,7 +32,7 @@ function Dashboard() {
     })();
   }, [navigate]);
 
-  const handleViewClick = (auditId) => {
+  const handleViewClick = (auditId: number) => {
     navigate(`/risk-matrix/${auditId}`);
   };
 
@@ -33,7 +40,7 @@ function Dashboard() {
     navigate("/new-audit");
   };
 
-  const handleDeleteClick = async (auditId) => {
+  const handleDeleteClick = async (auditId: number) => {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("Debes iniciar sesión.");

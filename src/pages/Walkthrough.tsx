@@ -2,14 +2,26 @@ import { useRef } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Button from "@mui/material/Button";
 
+interface RiskRow {
+  risk: string;
+  control: string;
+  walkthrough: string;
+  evidenceToRequest: string;
+  toConsider: string;
+  possibleObservation: string;
+}
+
 function Walkthrough() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { team, audit } = useParams();
-  const { journeyName, selectedRows } = location.state || {};
+  const { team, audit } = useParams<{ team: string; audit: string }>();
+  const {
+    journeyName,
+    selectedRows,
+  }: { journeyName: string; selectedRows: RiskRow[] } = location.state || {};
 
   // Referencia para el input de archivo
-  const videoInputRef = useRef(null);
+  const videoInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleGenerateDocumentation = () => {
     navigate(`/${team}/${audit}/${journeyName}/doc`, {
@@ -18,15 +30,15 @@ function Walkthrough() {
   };
 
   const handleVideoUploadClick = () => {
-    // Simula un clic en el input de archivo
-    videoInputRef.current.click();
+    if (videoInputRef.current) {
+      videoInputRef.current.click();
+    }
   };
 
-  const handleVideoUpload = (event) => {
-    const file = event.target.files[0];
+  const handleVideoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       alert(`Archivo seleccionado: ${file.name}`);
-      // Aquí puedes realizar acciones adicionales, como enviar el archivo al backend
     }
   };
 
@@ -39,7 +51,7 @@ function Walkthrough() {
         </h1>
         <div className="bg-gray-50 p-4 rounded-lg shadow-md border-l-4 border-blue-500">
           <p className="text-sm text-gray-700">"Hola"</p>
-        </div>{" "}
+        </div>
       </header>
 
       {/* Tabla de riesgos */}
@@ -57,7 +69,7 @@ function Walkthrough() {
           </thead>
           <tbody>
             {selectedRows && selectedRows.length > 0 ? (
-              selectedRows.map((row, index) => (
+              selectedRows.map((row: RiskRow, index: number) => (
                 <tr key={index} className="text-sm text-gray-700">
                   <td className="p-2 border">{row.risk}</td>
                   <td className="p-2 border">{row.control}</td>
@@ -74,7 +86,7 @@ function Walkthrough() {
             ) : (
               <tr>
                 <td
-                  colSpan="6"
+                  colSpan={6}
                   className="p-4 text-center text-gray-500 italic border"
                 >
                   No se seleccionaron riesgos.

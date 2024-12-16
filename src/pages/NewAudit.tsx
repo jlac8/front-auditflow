@@ -3,43 +3,72 @@ import * as XLSX from "xlsx";
 import { createAudit } from "../services/auditsService";
 import { useNavigate } from "react-router-dom";
 
+interface Risk {
+  auditor: string;
+  risk: string;
+  control: string;
+  walkthrough: string;
+}
+
 function NewAudit() {
   const navigate = useNavigate();
-  const [leader, setLeader] = useState("");
-  const [name, setName] = useState("");
-  const [period, setPeriod] = useState("");
-  const [excelFile, setExcelFile] = useState(null);
-  const [risks, setRisks] = useState([]);
+  const [leader, setLeader] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [period, setPeriod] = useState<string>("");
+  const [excelFile, setExcelFile] = useState<File | null>(null);
+  const [risks, setRisks] = useState<Risk[]>([]);
 
-  const handleFileChange = async (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) {
+      setExcelFile(null);
+      setRisks([]);
+      return;
+    }
+
+    const file: File = files[0];
     setExcelFile(file);
 
-    if (file) {
-      try {
-        const data = await readExcelFile(file);
-        setRisks(data);
-      } catch (error) {
-        console.error("Error al procesar el archivo Excel:", error);
-      }
+    try {
+      const data = await readExcelFile(file);
+      setRisks(data);
+    } catch (error) {
+      console.error("Error al procesar el archivo Excel:", error);
     }
   };
 
-  const readExcelFile = (file) => {
+  const readExcelFile = (file: File): Promise<Risk[]> => {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = (event) => {
-        const data = new Uint8Array(event.target.result);
-        const workbook = XLSX.read(data, { type: "array" });
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-        const formattedData = jsonData.slice(1).map((row) => ({
-          auditor: row[0] || "",
-          risk: row[1] || "",
-          control: row[2] || "",
-          walkthrough: row[3] || "",
-        }));
-        resolve(formattedData);
+      reader.onload = (event: ProgressEvent<FileReader>) => {
+        if (!event.target) {
+          reject(new Error("Error al leer el archivo: target nulo"));
+          return;
+        }
+
+        try {
+          const data = new Uint8Array(event.target.result as ArrayBuffer);
+          const workbook = XLSX.read(data, { type: "array" });
+          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData: any[][] = XLSX.utils.sheet_to_json(worksheet, {
+            header: 1,
+          });
+
+          if (jsonData.length === 0) {
+            resolve([]);
+            return;
+          }
+
+          const formattedData: Risk[] = jsonData.slice(1).map((row: any[]) => ({
+            auditor: row[0] || "",
+            risk: row[1] || "",
+            control: row[2] || "",
+            walkthrough: row[3] || "",
+          }));
+          resolve(formattedData);
+        } catch (error) {
+          reject(error);
+        }
       };
       reader.onerror = (error) => reject(error);
       reader.readAsArrayBuffer(file);
@@ -47,11 +76,20 @@ function NewAudit() {
   };
 
   const addRisk = () => {
-    const newRisk = { auditor: "", risk: "", control: "", walkthrough: "" };
+    const newRisk: Risk = {
+      auditor: "",
+      risk: "",
+      control: "",
+      walkthrough: "",
+    };
     setRisks([...risks, newRisk]);
   };
 
-  const handleRiskChange = (index, field, value) => {
+  const handleRiskChange = (
+    index: number,
+    field: keyof Risk,
+    value: string
+  ) => {
     const updatedRisks = risks.map((risk, i) =>
       i === index ? { ...risk, [field]: value } : risk
     );
@@ -67,7 +105,7 @@ function NewAudit() {
         return;
       }
 
-      if (!leader || !name || !period) {
+      if (!leader.trim() || !name.trim() || !period.trim()) {
         alert("Todos los campos son obligatorios.");
         return;
       }
@@ -97,7 +135,7 @@ function NewAudit() {
           <h2 className="text-xl font-semibold text-gray-800 mb-4">
             Detalles de la Auditoría
           </h2>
-          <div>
+          <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700">
               Auditor Líder
             </label>
